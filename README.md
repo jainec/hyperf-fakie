@@ -1,36 +1,97 @@
-# Introduction
+# Fakie
 
-This is a skeleton application using the Hyperf framework. This application is meant to be used as a starting place for those looking to get their feet wet with Hyperf Framework.
+A PHP Hyperf library to help you generate objects fully populated with fake/random data for testing purposes.
 
-# Requirements
+## Problem
+Generate fully populated tests objects with fake/random data is repetitive and boring
 
-Hyperf has some requirements for the system environment, it can only run under Linux and Mac environment, but due to the development of Docker virtualization technology, Docker for Windows can also be used as the running environment under Windows.
+```php
+// Ex.: Generating a TransactionAggregate object for testing purpose
+$address = new UserAddress(
+    id: $this->uuid->uuid4(),
+    street: Str::random(),
+    number: rand(1, 100),
+    city: Str::random(),
+    country: Str::random(),
+);
 
-The various versions of Dockerfile have been prepared for you in the [hyperf/hyperf-docker](https://github.com/hyperf/hyperf-docker) project, or directly based on the already built [hyperf/hyperf](https://hub.docker.com/r/hyperf/hyperf) Image to run.
+$contact = new UserContact(
+    email = Str::random(),
+    telephone = Str::random(),
+    twitter = Str::random(),
+);
 
-When you don't want to use Docker as the basis for your running environment, you need to make sure that your operating environment meets the following requirements:  
+$user = new User(
+    cpf: Str::random(),
+    age: rand(1, 100),
+    address: $address,
+    contact: $contact,
+    active: true,
+);
+```
 
- - PHP >= 7.3
- - Swoole PHP extension >= 4.5，and Disabled `Short Name`
- - OpenSSL PHP extension
- - JSON PHP extension
- - PDO PHP extension （If you need to use MySQL Client）
- - Redis PHP extension （If you need to use Redis Client）
- - Protobuf PHP extension （If you need to use gRPC Server of Client）
+<hr/>
 
-# Installation using Composer
+## Solution
+Use *Fakie*
 
-The easiest way to create a new Hyperf project is to use Composer. If you don't have it already installed, then please install as per the documentation.
+- It creates fully populated test objects for you
+- It uses the attributes types to generate and assign random values to them
+- If an attribute doesnt have a defined type, a random *integer* value will be assigned to it
+- If an attribute type is abstract/interface, Fakie will find and create the first concrete found implementation and assign to it
+- You can override attributes with desired values
+- You can set specific rules for your objects creation **(We strongly recommend doing this for non-typed attributes and also abstract/interface type attributes)**
 
-To create your new Hyperf project:
 
-$ composer create-project hyperf/hyperf-skeleton path/to/install
+### Simple Usage
+```php
+// Ex.: Generating a TransactionAggregate object for testing purpose
+$user = Fakie::object(User::class)->create();
 
-Once installed, you can run the server immediately using the command below.
+// Return
+User(
+    '12345678910',
+    23,
+    Address(
+        '123e4567-e89b-12d3-a456-426655440000',
+        'randomstring1',
+        100,
+        'randomstring1',
+        'randomstring1',
+    ),
+    Contact(
+        'randomstring1',
+        'randomstring2',
+        'randomstring3',
+    ),
+    true,
+)
+```
 
-$ cd path/to/install
-$ php bin/hyperf.php start
+### Overriding attributes values
+```php
+$user = Fakie::object(User::class)->create([
+    'age' => 30
+]);
+```
 
-This will start the cli-server on port `9501`, and bind it to all network interfaces. You can then visit the site at `http://localhost:9501/`
+### Setting desired rules
+Use the fakie.php config file
+```php
+// fakie.php
 
-which will bring up Hyperf default home page.
+return [
+    'rules' => [
+        'App\Domain\Entity\User' => [
+            'cpf' => $faker->cpf,
+        ],
+    ],
+];
+```
+
+### Using a method to build the object other than the __construct()
+```php
+$user = Fakie::object(UserDTO::class)
+    ->setBuildMethod('fromArray')
+    ->create();
+```
