@@ -1,5 +1,4 @@
 # Hyperf Fakie
-<hr/>
 
 This PHP Hyperf library aim to help you generate objects fully populated with fake/random data for testing purposes.
 [Badges]
