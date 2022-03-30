@@ -22,3 +22,4 @@ Dockerfile
 phpunit.xml
 bin/
 composer.lock
+config/

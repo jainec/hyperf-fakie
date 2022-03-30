@@ -5,14 +5,12 @@ This PHP Hyperf library aim to help you generate objects fully populated with fa
 [Badges]
 
 ## Installation
-<hr />
 
 ```shell
 composer require jainec/hyperf-fakie
 ```
 
 ## Configuration
-<hr/>
 Publish the config file so you can define your own rules
 
 ```shell
@@ -47,7 +45,6 @@ return [
 
 ## Usage
 Generate fully populated tests objects with fake/random data is repetitive and boring
-<hr />
 
 ### Simple usage
 Without hyperf-fakie
