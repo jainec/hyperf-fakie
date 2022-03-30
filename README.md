@@ -46,12 +46,11 @@ return [
 ```
 
 ## Usage
-Generate fully populated tests objects with fake/random data is repetitive and boring
 
 ### Simple usage
 Without hyperf-fakie
 ```php
-// Ex.: Generating an OrderHistory object for testing purpose
+// Ex.: Generating an OrderHistory object for testing purposes
 $order = new Order(
     id: rand(),
     type: array_rand(['VIRTUAL', 'PHYSICAL']),
@@ -75,12 +74,12 @@ $oder_history = new OrderHistory(
 
 See how it's simple with hyperf-Fakie
 ```php
-// Ex.: Generating an OrderHistory object for testing purpose with fakie
+// Ex.: Generating an OrderHistory object for testing purposes with fakie
 $order_history = Fakie::object(OrderHistory::class)->create();
 ```
 <hr/>
 
-### Overriding attributes values
+### Overriding properties values
 ```php
 $user = Fakie::object(OrderHistory::class)->create([
     'description' => 'Specific description for specific test case'
