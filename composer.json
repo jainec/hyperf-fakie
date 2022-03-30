@@ -1,18 +1,22 @@
 {
-    "name": "hyperf/hyperf-skeleton",
-    "type": "project",
+    "name": "jainec/hyperf-fakie",
+    "description": "Test object factory for Hyperf PHP",
+    "type": "library",
     "keywords": [
         "php",
         "swoole",
-        "framework",
         "hyperf",
-        "microservice",
-        "middleware"
+        "tests"
     ],
-    "description": "A coroutine framework that focuses on hyperspeed and flexible, specifically use for build microservices and middlewares.",
-    "license": "Apache-2.0",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jaine Conceição Santos",
+            "email": "jaine.ccs@gmail.com"
+        }
+    ],
     "require": {
-        "php": ">=7.3",
+        "php": ">=8.0",
         "hyperf/cache": "~2.2.0",
         "hyperf/command": "~2.2.0",
         "hyperf/config": "~2.2.0",
@@ -25,26 +29,13 @@
         "hyperf/process": "~2.2.0"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.0",
-        "hyperf/devtool": "~2.2.0",
-        "hyperf/ide-helper": "~2.2.0",
         "hyperf/testing": "~2.2.0",
-        "mockery/mockery": "^1.0",
-        "phpstan/phpstan": "^0.12",
-        "swoole/ide-helper": "^4.5"
-    },
-    "suggest": {
-        "ext-openssl": "Required to use HTTPS.",
-        "ext-json": "Required to use JSON.",
-        "ext-pdo": "Required to use MySQL Client.",
-        "ext-pdo_mysql": "Required to use MySQL Client.",
-        "ext-redis": "Required to use Redis Client."
+        "mockery/mockery": "^1.0"
     },
     "autoload": {
         "psr-4": {
-            "App\\": "app/"
-        },
-        "files": []
+            "JaineC\\Hyperf\\Fakie\\": "src/"
+        }
     },
     "autoload-dev": {
         "psr-4": {
@@ -57,20 +48,14 @@
         "optimize-autoloader": true,
         "sort-packages": true
     },
-    "extra": [],
+    "extra": {
+        "hyperf": {
+            "config": "JaineC\\Hyperf\\Fakie\\ConfigProvider"
+        }
+    },
     "scripts": {
-        "post-root-package-install": [
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
-        ],
-        "post-autoload-dump": [
-            "rm -rf runtime/container"
-        ],
-        "test": "co-phpunit --prepend test/bootstrap.php -c phpunit.xml --colors=always",
+        "test": "co-phpunit --prepend test/bootstrap.php -c phpunit.xml --colors=always --coverage-html=./test/reports/coverage",
         "cs-fix": "php-cs-fixer fix $1",
-        "analyse": "phpstan analyse --memory-limit 300M -l 0 -c phpstan.neon ./app ./config",
-        "start": [
-            "Composer\\Config::disableProcessTimeout",
-            "php ./bin/hyperf.php start"
-        ]
+        "analyse": "phpstan analyse --memory-limit 300M -l 0 -c phpstan.neon ./app ./config"
     }
 }

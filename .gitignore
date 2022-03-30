@@ -21,3 +21,4 @@ phpstan.neon
 Dockerfile
 phpunit.xml
 bin/
+composer.lock

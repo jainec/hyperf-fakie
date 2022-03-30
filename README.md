@@ -1,97 +1,126 @@
-# Fakie
+# Hyperf Fakie
+<hr/>
 
-A PHP Hyperf library to help you generate objects fully populated with fake/random data for testing purposes.
+This PHP Hyperf library aim to help you generate objects fully populated with fake/random data for testing purposes.
+[Badges]
 
-## Problem
+## Installation
+<hr />
+
+```shell
+composer require jainec/hyperf-fakie
+```
+
+## Configuration
+<hr/>
+Publish the config file so you can define your own rules
+
+```shell
+php bin/hyperf.php vendor:publish jainec/hyperf-fakie
+```
+The config file will show up in the following path:
+```shell
+config/autoload/fakie.php
+```
+Here in the file you can define your own creation rules for specific classes and properties
+```PHP
+<?php
+
+declare(strict_types=1);
+
+return [
+    'rules' => [
+        'App\Entity\User' => [
+            'type' => array_rand(['CONSUMER', 'SELLER']),
+        ],
+        'App\Entity\Order' => [
+            'type' => array_rand(['VIRTUAL', 'PHYSICAL']),
+        ],
+        'Class' => [
+            'property1' => 'rule1',
+            'property2' => 'rule2',
+        ],
+    ],
+];
+
+```
+
+## Usage
 Generate fully populated tests objects with fake/random data is repetitive and boring
+<hr />
 
+### Simple usage
+Without hyperf-fakie
 ```php
-// Ex.: Generating a TransactionAggregate object for testing purpose
-$address = new UserAddress(
-    id: $this->uuid->uuid4(),
-    street: Str::random(),
-    number: rand(1, 100),
-    city: Str::random(),
-    country: Str::random(),
-);
-
-$contact = new UserContact(
-    email = Str::random(),
-    telephone = Str::random(),
-    twitter = Str::random(),
+// Ex.: Generating an OrderHistory object for testing purpose
+$order = new Order(
+    id: rand(),
+    type: array_rand(['VIRTUAL', 'PHYSICAL']),
+    amount: rand(),
+    value: rand() / 100,
 );
 
 $user = new User(
-    cpf: Str::random(),
-    age: rand(1, 100),
-    address: $address,
-    contact: $contact,
-    active: true,
+    name: Str::random(),
+    telephone: Str::random(),
+    city: Str::random(),
 );
+
+$oder_history = new OrderHistory(
+    id: rand(),
+    description: Str::random(),
+    order: $order,
+    user: $user,
+);
+```
+
+See how it's simple with hyperf-Fakie
+```php
+// Ex.: Generating an OrderHistory object for testing purpose with fakie
+$order_history = Fakie::object(OrderHistory::class)->create();
+```
+<hr/>
+
+### Overriding attributes values
+```php
+$user = Fakie::object(OrderHistory::class)->create([
+    'description' => 'Specific description for specific test case'
+]);
 ```
 
 <hr/>
 
-## Solution
-Use *Fakie*
-
-- It creates fully populated test objects for you
-- It uses the attributes types to generate and assign random values to them
-- If an attribute doesnt have a defined type, a random *integer* value will be assigned to it
-- If an attribute type is abstract/interface, Fakie will find and create the first concrete found implementation and assign to it
-- You can override attributes with desired values
-- You can set specific rules for your objects creation **(We strongly recommend doing this for non-typed attributes and also abstract/interface type attributes)**
-
-
-### Simple Usage
+### Using a method to build the object other than the __construct()
+You can use this feature only if your object can be built using a method that **accepts an array** with the **[properties => values]** as argument 
 ```php
-// Ex.: Generating a TransactionAggregate object for testing purpose
-$user = Fakie::object(User::class)->create();
-
-// Return
-User(
-    '12345678910',
-    23,
-    Address(
-        '123e4567-e89b-12d3-a456-426655440000',
-        'randomstring1',
-        100,
-        'randomstring1',
-        'randomstring1',
-    ),
-    Contact(
-        'randomstring1',
-        'randomstring2',
-        'randomstring3',
-    ),
-    true,
-)
+$user = Fakie::object(User::class)->setBuildMethod('fromArray')->create();
 ```
+<hr />
 
-### Overriding attributes values
-```php
-$user = Fakie::object(User::class)->create([
-    'age' => 30
-]);
-```
+## Important
 
-### Setting desired rules
-Use the fakie.php config file
+- Fakie uses the classes properties types to generate and assign random values to them
+- If a property doesn't have a defined type, a default *string* value will be assigned to it
+- If a property type is *array* or *array<*Type*>* it's recommended to you define your own rules in the config *fakie.php* file. Because we know with PHP we cannot be sure about what is expected inside an array
+- If a property type is abstract/interface, you **need** to define your own rules for these cases specifying a concrete class
+- You can also use Fakie objects to specify rules in you config file:
 ```php
-// fakie.php
+<?php
+
+declare(strict_types=1);
 
 return [
     'rules' => [
-        'App\Domain\Entity\User' => [
-            'cpf' => $faker->cpf,
+        'App\Entity\OrderHistory' => [
+            'order' => Fakie::object(Order::class), // Don't call the create() method here
+            'user' => Fakie::object(user::class)->setBuildMethod('fromArray'), // Don't call the create() method here
         ],
     ],
 ];
 ```
+<hr />
 
-### Using a method to build the object other than the __construct()
-```php
-$user = Fakie::object(UserDTO::class)
-    ->setBuildMethod('fromArray')
-    ->create();
-```
+Feel free to contribute! Help us improve Fakie! 🎉
+
+MIT © 2022 Jaine Conceição Santos
+

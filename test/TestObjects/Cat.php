@@ -1,22 +1,21 @@
 <?php
 
-declare(strict_types=1);
+namespace HyperfTest\TestObjects;
 
-namespace HyperfTest;
-
-class User
+class Cat
 {
     public function __construct(
         private string $name,
-        private int $age,
-    ) {
+        private House $house,
+    )
+    {
     }
 
     public function toArray(): array
     {
         return [
             'name' => $this->name,
-            'age' => $this->age,
+            'house' => $this->house->toArray(),
         ];
     }
 }
