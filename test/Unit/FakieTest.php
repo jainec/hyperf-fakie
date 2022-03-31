@@ -12,6 +12,7 @@ use HyperfTest\TestObjects\PetOwner;
 use HyperfTest\TestObjects\PlayPiano;
 use HyperfTest\TestObjects\PlayVideoGame;
 use HyperfTest\TestObjects\User;
+use HyperfTest\TestObjects\UserDTO;
 use HyperfTest\TestObjects\WoodHouse;
 use JaineC\Hyperf\Fakie\Exception\FakieException;
 use JaineC\Hyperf\Fakie\Fakie;
@@ -62,7 +63,7 @@ class FakieTest extends TestCase
     public function testCreateObjectWithoutAnyPropertyReturnSuccess()
     {
         $this->expectException(FakieException::class);
-        $this->expectExceptionMessage('Error trying to fetch class properties. Maybe your class has no constructor/propeerties/build method');
+        $this->expectExceptionMessage('Error trying to fetch class properties. Maybe your class has no constructor/properties/build method: Class "HyperfTest\Base\Address');
 
         $address = Fakie::object(Address::class)->create();
 
@@ -117,7 +118,7 @@ class FakieTest extends TestCase
     public function testCreateObjectWitNoConstructorNeitherBuildMethodReturnError()
     {
         $this->expectException(FakieException::class);
-        $this->expectExceptionMessage('Error trying to fetch class properties. Maybe your class has no constructor/propeerties/build method');
+        $this->expectExceptionMessage('Error trying to fetch class properties. Maybe your class has no constructor/properties/build method: ');
 
         Fakie::object(PlayPiano::class)->create();
     }
@@ -134,5 +135,15 @@ class FakieTest extends TestCase
         $this->expectException(\TypeError::class);
 
         Fakie::object(Job::class)->setBuildMethod('fromParameters')->create();
+    }
+
+    public function testCreateObjectThatExtendingAnAbstractClassUsingBuildMethod()
+    {
+        $user_dto = Fakie::object(UserDTO::class)->setBuildMethod('fromArray')->create();
+
+        $this->assertInstanceOf(UserDTO::class, $user_dto);
+        $this->assertNotNull($user_dto->toArray()['name']);
+        $this->assertNotNull($user_dto->toArray()['age']);
+        $this->assertNotNull($user_dto->toArray()['height']);
     }
 }

@@ -80,7 +80,7 @@ class Fakie
 
             return $properties;
         } catch (\Exception $e) {
-            throw new FakieException('Error trying to fetch class properties. Maybe your class has no constructor/propeerties/build method');
+            throw new FakieException("Error trying to fetch class properties. Maybe your class has no constructor/properties/build method: {$e->getMessage()}");
         }
     }
 
@@ -229,7 +229,7 @@ class Fakie
 
             return $class->newInstanceArgs($populated_properties);
         } catch (\Exception $e) {
-            throw new FakieException("It was not possible to mount the object using {$this->build_method} method");
+            throw new FakieException("It was not possible to mount the object using {$this->build_method} method: {$e->getMessage()}");
         }
 
     }
