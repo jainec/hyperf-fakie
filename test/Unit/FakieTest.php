@@ -6,8 +6,10 @@ namespace HyperfTest\Unit;
 
 use HyperfTest\Base\Address;
 use HyperfTest\TestObjects\Cat;
+use HyperfTest\TestObjects\Game;
 use HyperfTest\TestObjects\Job;
 use HyperfTest\TestObjects\PetOwner;
+use HyperfTest\TestObjects\PlayPiano;
 use HyperfTest\TestObjects\PlayVideoGame;
 use HyperfTest\TestObjects\User;
 use HyperfTest\TestObjects\WoodHouse;
@@ -60,7 +62,7 @@ class FakieTest extends TestCase
     public function testCreateObjectWithoutAnyPropertyReturnSuccess()
     {
         $this->expectException(FakieException::class);
-        $this->expectExceptionMessage('Error trying to fetch class properties');
+        $this->expectExceptionMessage('Error trying to fetch class properties. Maybe your class has no constructor/propeerties/build method');
 
         $address = Fakie::object(Address::class)->create();
 
@@ -110,5 +112,27 @@ class FakieTest extends TestCase
         $this->expectExceptionMessage("It's not possible to instantiate the abstract property type HyperfTest\\TestObjects\\Hobie");
 
         Fakie::object(PlayVideoGame::class)->create();
+    }
+
+    public function testCreateObjectWitNoConstructorNeitherBuildMethodReturnError()
+    {
+        $this->expectException(FakieException::class);
+        $this->expectExceptionMessage('Error trying to fetch class properties. Maybe your class has no constructor/propeerties/build method');
+
+        Fakie::object(PlayPiano::class)->create();
+    }
+
+    public function testCreateObjectWithConstructorWithMoreParametersThanPropertiesReturnSuccess()
+    {
+        $game = Fakie::object(Game::class)->create();
+
+        $this->assertInstanceOf(Game::class, $game);
+    }
+
+    public function testCreateObjectSettingInvalidBuildMethodReturnException()
+    {
+        $this->expectException(\TypeError::class);
+
+        Fakie::object(Job::class)->setBuildMethod('fromParameters')->create();
     }
 }
