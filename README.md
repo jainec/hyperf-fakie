@@ -64,7 +64,7 @@ $user = new User(
     city: Str::random(),
 );
 
-$oder_history = new OrderHistory(
+$order_history = new OrderHistory(
     id: rand(),
     description: Str::random(),
     order: $order,
