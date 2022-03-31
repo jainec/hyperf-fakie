@@ -13,7 +13,6 @@ namespace JaineC\Hyperf\Fakie;
 
 use JaineC\Hyperf\Fakie\Exception\FakieException;
 use ReflectionClass;
-use ReflectionProperty;
 
 class Fakie
 {
@@ -69,9 +68,19 @@ class Fakie
         try {
             $class = new ReflectionClass($this->class_name);
 
-            return array_map(fn ($property) => $property->getName(), $class->getProperties());
+            $properties = $class->getConstructor()?->getParameters();
+
+            if (isset($this->build_method)) {
+                $properties = $class->getProperties();
+            }
+
+            if (is_null($properties)) {
+                throw new FakieException();
+            }
+
+            return $properties;
         } catch (\Exception $e) {
-            throw new FakieException('Error trying to fetch class properties');
+            throw new FakieException('Error trying to fetch class properties. Maybe your class has no constructor/propeerties/build method');
         }
     }
 
@@ -80,9 +89,11 @@ class Fakie
         $populated_properties = [];
 
         foreach ($properties as $property) {
-            $populated_properties[$property] = match (true) {
-                $this->isValueInOverrideProperties($override_properties, $property) => $override_properties[$property],
-                $this->isValueInConfigRules($property) => $this->getValueFromConfigRules($property),
+            $property_name = $property->getName();
+
+            $populated_properties[$property_name] = match (true) {
+                $this->isValueInOverrideProperties($override_properties, $property_name) => $override_properties[$property_name],
+                $this->isValueInConfigRules($property_name) => $this->getValueFromConfigRules($property_name),
                 default => $this->generateRandomValueByType($property),
             };
         }
@@ -90,7 +101,7 @@ class Fakie
         return $populated_properties;
     }
 
-    private function isValueInOverrideProperties($override_properties, $property): bool
+    private function isValueInOverrideProperties(array $override_properties, string $property): bool
     {
         if (in_array($property, array_keys($override_properties))) {
             return true;
@@ -128,18 +139,17 @@ class Fakie
     /**
      * @throws FakieException
      */
-    private function generateRandomValueByType(string $property)
+    private function generateRandomValueByType($property)
     {
         try {
-            $reflection_property = new ReflectionProperty($this->class_name, $property);
-            $property_type = $reflection_property->getType()?->getName();
+            $property_type = $property->getType()?->getName();
 
             if (! isset($property_type)) {
                 return self::DEFAULT_VALUE;
             }
 
             if (interface_exists($property_type)) {
-                throw new FakieException("The property {$property} is an interface type");
+                throw new FakieException("The property {$property->getName()} is an interface type");
             }
 
             if (class_exists($property_type)) {
@@ -218,7 +228,6 @@ class Fakie
             }
 
             return $class->newInstanceArgs($populated_properties);
-
         } catch (\Exception $e) {
             throw new FakieException("It was not possible to mount the object using {$this->build_method} method");
         }

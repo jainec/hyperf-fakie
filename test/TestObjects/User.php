@@ -6,6 +6,8 @@ namespace HyperfTest\TestObjects;
 
 class User
 {
+    private string $nickname;
+
     public function __construct(
         private string $name,
         public int $age,

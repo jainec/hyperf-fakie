@@ -17,6 +17,14 @@ class Job
         }
     }
 
+    public function fromParameters(string $role, float $salary): static
+    {
+        $this->role = $role;
+        $this->salary = $salary;
+
+        return $this;
+    }
+
     public function toArray(): array
     {
         return [
