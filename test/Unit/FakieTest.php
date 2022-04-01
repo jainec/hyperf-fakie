@@ -14,6 +14,7 @@ use HyperfTest\TestObjects\PlayPiano;
 use HyperfTest\TestObjects\PlayVideoGame;
 use HyperfTest\TestObjects\User;
 use HyperfTest\TestObjects\UserDTO;
+use HyperfTest\TestObjects\WhiteHorse;
 use HyperfTest\TestObjects\WoodHouse;
 use JaineC\Hyperf\Fakie\Exception\FakieException;
 use JaineC\Hyperf\Fakie\Fakie;
@@ -65,7 +66,7 @@ class FakieTest extends TestCase
     public function testCreateObjectWithoutAnyPropertyReturnSuccess()
     {
         $this->expectException(FakieException::class);
-        $this->expectExceptionMessage('Error trying to fetch class properties. Maybe your class has no constructor/properties/build method: Class "HyperfTest\Base\Address');
+        $this->expectExceptionMessage('Error trying to fetch class HyperfTest\Base\Address properties. Maybe your class has no constructor/properties/build method: Class "HyperfTest\Base\Address');
 
         $address = Fakie::object(Address::class)->create();
 
@@ -120,7 +121,7 @@ class FakieTest extends TestCase
     public function testCreateObjectWitNoConstructorNeitherBuildMethodReturnError()
     {
         $this->expectException(FakieException::class);
-        $this->expectExceptionMessage('Error trying to fetch class properties. Maybe your class has no constructor/properties/build method: ');
+        $this->expectExceptionMessage('Error trying to fetch class HyperfTest\TestObjects\PlayPiano properties. Maybe your class has no constructor/properties/build method: ');
 
         Fakie::object(PlayPiano::class)->create();
     }
@@ -158,5 +159,16 @@ class FakieTest extends TestCase
         $this->assertInstanceOf(Dog::class, $dog);
         $this->assertNotNull($dog_array['id']);
         $this->assertNotNull($dog_array['height']);
+    }
+
+    public function testCreateObjectThatExtendsClassThatExtendsClass()
+    {
+        $white_horse = Fakie::object(WhiteHorse::class)->setBuildMethod('fromArray')->create();
+        $white_horse_array = $white_horse->toArray();
+
+        $this->assertInstanceOf(WhiteHorse::class, $white_horse);
+        $this->assertNotNull($white_horse_array['dog']);
+        $this->assertNotNull($white_horse_array['name']);
+        $this->assertNotNull($white_horse_array['height']);
     }
 }

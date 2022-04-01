@@ -84,7 +84,7 @@ class Fakie
 
             return $properties;
         } catch (\Exception $e) {
-            throw new FakieException("Error trying to fetch class properties. Maybe your class has no constructor/properties/build method: {$e->getMessage()}");
+            throw new FakieException("Error trying to fetch class {$this->class_name} properties. Maybe your class has no constructor/properties/build method: {$e->getMessage()}");
         }
     }
 
@@ -234,9 +234,7 @@ class Fakie
             $class = new ReflectionClass($this->class_name);
 
             if (isset($this->build_method)) {
-                $instance = $class->newInstance();
-                $class->getMethod($this->build_method)->invoke($instance, $populated_properties);
-                return $instance;
+                return $class->getMethod($this->build_method)->invoke($class->newInstance(), $populated_properties);
             }
 
             return $class->newInstanceArgs($populated_properties);

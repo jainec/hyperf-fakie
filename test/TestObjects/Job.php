@@ -15,6 +15,8 @@ class Job
         foreach ($args as $key => $arg) {
             $this->{$key} = $arg;
         }
+
+        return $this;
     }
 
     public function fromParameters(string $role, float $salary): static
