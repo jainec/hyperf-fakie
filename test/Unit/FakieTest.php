@@ -6,6 +6,7 @@ namespace HyperfTest\Unit;
 
 use HyperfTest\Base\Address;
 use HyperfTest\TestObjects\Cat;
+use HyperfTest\TestObjects\Dog;
 use HyperfTest\TestObjects\Game;
 use HyperfTest\TestObjects\Job;
 use HyperfTest\TestObjects\PetOwner;
@@ -32,6 +33,7 @@ class FakieTest extends TestCase
         $this->assertNotNull($user_array['height']);
         $this->assertNotNull($user_array['languages']);
         $this->assertNotNull($user_array['active']);
+        $this->assertNotNull($user_array['nickname']);
 
         $this->assertEquals('default', $user_array['hobie']);
         $this->assertEquals('12345678910', $user_array['cpf']);
@@ -145,5 +147,16 @@ class FakieTest extends TestCase
         $this->assertNotNull($user_dto->toArray()['name']);
         $this->assertNotNull($user_dto->toArray()['age']);
         $this->assertNotNull($user_dto->toArray()['height']);
+    }
+
+    public function testCreateObjectWithBuildMethodAndRemovingUndesiredPropertiesReturnSuccess()
+    {
+        $dog = Fakie::object(Dog::class)->setBuildMethod('fromArray', ['owners'])->create();
+
+        $dog_array = $dog->toArray();
+
+        $this->assertInstanceOf(Dog::class, $dog);
+        $this->assertNotNull($dog_array['id']);
+        $this->assertNotNull($dog_array['height']);
     }
 }

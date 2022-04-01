@@ -6,7 +6,7 @@ namespace HyperfTest\TestObjects;
 
 class User
 {
-    private string $nickname;
+    private static string $nickname;
 
     public function __construct(
         private string $name,
@@ -16,7 +16,9 @@ class User
         private bool $active,
         private string $cpf,
         private $hobie,
+        string $nickname,
     ) {
+        self::$nickname = $nickname;
     }
 
     public function toArray(): array
@@ -29,6 +31,7 @@ class User
             'active' => $this->active,
             'cpf' => $this->cpf,
             'hobie' => $this->hobie,
+            'nickname' => self::$nickname,
         ];
     }
 }

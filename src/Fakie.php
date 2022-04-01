@@ -18,7 +18,9 @@ class Fakie
 {
     protected const DEFAULT_VALUE = 'default';
 
-    private string $build_method;
+    private ?string $build_method = null;
+
+    private ?array $properties_to_remove = [];
 
     public function __construct(
         private string $class_name,
@@ -31,19 +33,12 @@ class Fakie
         return new self($class_name);
     }
 
-    public function setBuildMethod(string $build_method): static
+    public function setBuildMethod(?string $build_method, array $properties_to_remove = []): static
     {
         $this->build_method = $build_method;
+        $this->properties_to_remove = $properties_to_remove;
+
         return $this;
-    }
-
-    public function create(array $override_properties = [])
-    {
-        $properties = $this->getClassProperties();
-
-        $populated_properties = $this->populateClassProperties($properties, $override_properties);
-
-        return $this->mountObject($populated_properties);
     }
 
     /**
@@ -60,6 +55,15 @@ class Fakie
         }
     }
 
+    public function create(array $override_properties = [])
+    {
+        $properties = $this->getClassProperties();
+
+        $populated_properties = $this->populateClassProperties($properties, $override_properties);
+
+        return $this->mountObject($populated_properties);
+    }
+
     /**
      * @throws FakieException
      */
@@ -71,7 +75,7 @@ class Fakie
             $properties = $class->getConstructor()?->getParameters();
 
             if (isset($this->build_method)) {
-                $properties = $class->getProperties();
+                $properties = $this->removeUndesiredProperties($class->getProperties());
             }
 
             if (is_null($properties)) {
@@ -82,6 +86,14 @@ class Fakie
         } catch (\Exception $e) {
             throw new FakieException("Error trying to fetch class properties. Maybe your class has no constructor/properties/build method: {$e->getMessage()}");
         }
+    }
+
+    private function removeUndesiredProperties(array $properties): array
+    {
+        return array_filter(
+            $properties,
+            fn ($key) => (! in_array($key->getName(), $this->properties_to_remove))
+        );
     }
 
     private function populateClassProperties(array $properties, array $override_properties): array
