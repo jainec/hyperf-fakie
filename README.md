@@ -91,8 +91,16 @@ $user = Fakie::object(OrderHistory::class)->create([
 ### Using a method to build the object other than the __construct()
 You can use this feature only if your object can be built using a method that **accepts an array** with the **[properties => values]** as argument 
 ```php
-$user = Fakie::object(User::class)->setBuildMethod('fromArray')->create();
+$user = Fakie::object(UserDTO::class)->setBuildMethod('fromArray')->create();
 ```
+In this case Fakie will create and assign random values to all properties of the class. If there are properties your method don't need to receive, you can remove them passing a second argument to *setBuildMethod* defining the properties to remove
+
+```php
+$user = Fakie::object(UserDTO::class)->setBuildMethod('fromArray', ['type', 'age'])->create();
+```
+
+In the example above the properties *type* and *age* will not be used and will not be passed to *fromArray* method 
+
 <hr />
 
 ## Important
