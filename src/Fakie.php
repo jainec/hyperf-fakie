@@ -44,7 +44,7 @@ class Fakie
      */
     private function validateClassName(): void
     {
-        if (!isset($this->class_name)) {
+        if (! isset($this->class_name)) {
             throw new FakieException('The object class was not defined. Please set the object class using Fakie::object()');
         }
 
@@ -90,7 +90,7 @@ class Fakie
     {
         return array_filter(
             $properties,
-            fn($key) => (!in_array($key->getName(), $this->properties_to_exclude))
+            fn ($key) => (! in_array($key->getName(), $this->properties_to_exclude))
         );
     }
 
