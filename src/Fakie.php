@@ -18,26 +18,24 @@ class Fakie
 {
     protected const DEFAULT_VALUE = 'default';
 
-    private ?string $build_method = null;
-
-    private ?array $properties_to_remove = [];
+    private ?array $properties_to_exclude = [];
 
     public function __construct(
-        private string $class_name,
-    ) {
+        private string  $class_name,
+        private ?string $build_method = null,
+    )
+    {
         $this->validateClassName();
     }
 
-    public static function object(string $class_name): static
+    public static function object(string $class_name, string $build_method = null): static
     {
-        return new self($class_name);
+        return new self($class_name, $build_method);
     }
 
-    public function setBuildMethod(string $build_method, array $properties_to_remove = []): static
+    public function excludeProperties(array $properties_to_exclude = []): static
     {
-        $this->build_method = $build_method;
-        $this->properties_to_remove = $properties_to_remove;
-
+        $this->properties_to_exclude = $properties_to_exclude;
         return $this;
     }
 
@@ -92,7 +90,7 @@ class Fakie
     {
         return array_filter(
             $properties,
-            fn ($key) => (! in_array($key->getName(), $this->properties_to_remove))
+            fn ($key) => (! in_array($key->getName(), $this->properties_to_exclude))
         );
     }
 
@@ -124,9 +122,7 @@ class Fakie
 
     private function isValueInConfigRules(string $property): bool
     {
-        $config_rules = config('fakie.rules');
-
-        $rule = $config_rules[$this->class_name][$property] ?? null;
+        $rule = $this->getRuleFromConfigFile($property);
 
         if (! isset($rule)) {
             return false;
@@ -137,15 +133,20 @@ class Fakie
 
     private function getValueFromConfigRules(string $property)
     {
-        $config_rules = config('fakie.rules');
-
-        $rule = $config_rules[$this->class_name][$property];
+        $rule = $this->getRuleFromConfigFile($property);
 
         if (is_a($rule, Fakie::class)) {
             $rule = $rule->create();
         }
 
         return $rule;
+    }
+
+    private function getRuleFromConfigFile(string $property)
+    {
+        $config_rules = config('fakie.rules');
+
+        return $config_rules[$this->class_name][$property] ?? null;
     }
 
     /**
