@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace HyperfTest\Unit;
 
-use HyperfTest\Base\Address;
 use HyperfTest\TestObjects\Cat;
 use HyperfTest\TestObjects\Dog;
 use HyperfTest\TestObjects\Game;
@@ -55,22 +54,12 @@ class FakieTest extends TestCase
 
     public function testCreateObjectSettingArrayBuildMethodReturnSuccess()
     {
-        $job = Fakie::object(Job::class)->setBuildMethod('fromArray')->create();
+        $job = Fakie::object(Job::class, 'fromArray')->create();
 
         $this->assertInstanceOf(Job::class, $job);
 
         $this->assertNotNull($job->toArray()['role']);
         $this->assertNotNull($job->toArray()['salary']);
-    }
-
-    public function testCreateObjectWithoutAnyPropertyReturnSuccess()
-    {
-        $this->expectException(FakieException::class);
-        $this->expectExceptionMessage('Error trying to fetch class HyperfTest\Base\Address properties. Maybe your class has no constructor/properties/build method: Class "HyperfTest\Base\Address');
-
-        $address = Fakie::object(Address::class)->create();
-
-        $this->assertInstanceOf(Address::class, $address);
     }
 
     public function testCreateObjectWithFakieRuleInConfigRules()
@@ -137,12 +126,12 @@ class FakieTest extends TestCase
     {
         $this->expectException(\TypeError::class);
 
-        Fakie::object(Job::class)->setBuildMethod('fromParameters')->create();
+        Fakie::object(Job::class, 'fromParameters')->create();
     }
 
     public function testCreateObjectThatExtendingAnAbstractClassUsingBuildMethod()
     {
-        $user_dto = Fakie::object(UserDTO::class)->setBuildMethod('fromArray')->create();
+        $user_dto = Fakie::object(UserDTO::class, 'fromArray')->create();
 
         $this->assertInstanceOf(UserDTO::class, $user_dto);
         $this->assertNotNull($user_dto->toArray()['name']);
@@ -152,7 +141,7 @@ class FakieTest extends TestCase
 
     public function testCreateObjectWithBuildMethodAndRemovingUndesiredPropertiesReturnSuccess()
     {
-        $dog = Fakie::object(Dog::class)->setBuildMethod('fromArray', ['owners'])->create();
+        $dog = Fakie::object(Dog::class, 'fromArray')->excludeProperties(['owners'])->create();
 
         $dog_array = $dog->toArray();
 
@@ -163,7 +152,7 @@ class FakieTest extends TestCase
 
     public function testCreateObjectThatExtendsClassThatExtendsClass()
     {
-        $white_horse = Fakie::object(WhiteHorse::class)->setBuildMethod('fromArray')->create();
+        $white_horse = Fakie::object(WhiteHorse::class, 'fromArray')->create();
         $white_horse_array = $white_horse->toArray();
 
         $this->assertInstanceOf(WhiteHorse::class, $white_horse);
