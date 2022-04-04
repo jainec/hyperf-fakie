@@ -33,7 +33,7 @@ class Fakie
         return new self($class_name);
     }
 
-    public function setBuildMethod(?string $build_method, array $properties_to_remove = []): static
+    public function setBuildMethod(string $build_method, array $properties_to_remove = []): static
     {
         $this->build_method = $build_method;
         $this->properties_to_remove = $properties_to_remove;
