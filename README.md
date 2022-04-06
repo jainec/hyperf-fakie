@@ -119,7 +119,7 @@ return [
     'rules' => [
         'App\Entity\OrderHistory' => [
             'order' => Fakie::object(Order::class), // Don't call the create() method here
-            'user' => Fakie::object(user::class, 'fromArray'), // Don't call the create() method here
+            'user' => Fakie::object(User::class, 'fromArray'), // Don't call the create() method here
         ],
     ],
 ];
