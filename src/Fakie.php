@@ -144,7 +144,7 @@ class Fakie
 
     private function getRuleFromConfigFile(string $property)
     {
-        $config_rules = config('fakie.rules');
+        $config_rules = \Hyperf\Config\config('fakie.rules');
 
         return $config_rules[$this->class_name][$property] ?? null;
     }
