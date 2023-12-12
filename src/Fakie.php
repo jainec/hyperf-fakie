@@ -11,10 +11,7 @@ declare(strict_types=1);
  */
 namespace JaineC\Hyperf\Fakie;
 
-use Hyperf\Contract\ConfigInterface;
-use Hyperf\Support\Traits\Container;
 use JaineC\Hyperf\Fakie\Exception\FakieException;
-use Psr\Container\ContainerInterface;
 use ReflectionClass;
 
 class Fakie
