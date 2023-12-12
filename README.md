@@ -3,6 +3,7 @@
 This PHP Hyperf library aim to help you generate objects fully populated with fake/random data for testing purposes.
 
 [![Latest Stable Version](http://poser.pugx.org/jainec/hyperf-fakie/v)](https://packagist.org/packages/jainec/hyperf-fakie) 
+[![Total Downloads](http://poser.pugx.org/jainec/hyperf-fakie/downloads)](https://packagist.org/packages/jainec/hyperf-fakie)
 [![License](http://poser.pugx.org/jainec/hyperf-fakie/license)](https://packagist.org/packages/jainec/hyperf-fakie) 
 [![PHP Version Require](http://poser.pugx.org/jainec/hyperf-fakie/require/php)](https://packagist.org/packages/jainec/hyperf-fakie)
 
@@ -119,7 +120,7 @@ return [
     'rules' => [
         'App\Entity\OrderHistory' => [
             'order' => Fakie::object(Order::class), // Don't call the create() method here
-            'user' => Fakie::object(user::class, 'fromArray'), // Don't call the create() method here
+            'user' => Fakie::object(User::class, 'fromArray'), // Don't call the create() method here
         ],
     ],
 ];
