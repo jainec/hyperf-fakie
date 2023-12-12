@@ -11,7 +11,10 @@ declare(strict_types=1);
  */
 namespace JaineC\Hyperf\Fakie;
 
+use Hyperf\Contract\ConfigInterface;
+use Hyperf\Support\Traits\Container;
 use JaineC\Hyperf\Fakie\Exception\FakieException;
+use Psr\Container\ContainerInterface;
 use ReflectionClass;
 
 class Fakie
@@ -144,7 +147,7 @@ class Fakie
 
     private function getRuleFromConfigFile(string $property)
     {
-        $config_rules = config('fakie.rules');
+        $config_rules = \Hyperf\Config\config('fakie.rules');
 
         return $config_rules[$this->class_name][$property] ?? null;
     }
